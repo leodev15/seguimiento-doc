@@ -1,0 +1,28 @@
+{
+  "name": "seguimiento_doc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node start.js",
+    "client": "npm --prefix client run dev",
+    "server": "npm --prefix server run dev",
+    "build-client": "npm --prefix client run build",
+    "start-prod": "node start.js --prod",
+    "serve-prod": "cd client && npm run serve:prod"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/react-modal": "^3.16.3",
+    "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "crypto-browserify": "^3.12.1",
+    "dotenv": "^16.5.0",
+    "pg": "^8.15.6",
+    "react-modal": "^3.16.3"
+  }
+}
