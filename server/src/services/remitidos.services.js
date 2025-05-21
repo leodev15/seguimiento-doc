@@ -27,7 +27,7 @@ export async function obtenerResumenPorExpediente(expediente) {
       ON dep_emisora.co_dependencia = r.co_dep_emi_ref
     LEFT JOIN "IDOSGD_GRA".idosgd.rhtm_dependencia dep_destino 
       ON dep_destino.co_dependencia = r.ti_emi_des
-    WHERE r.nu_expediente = $1
+    WHERE r.nu_expediente = $1 order by rem.fe_use_cre desc
     `;
 
   try {

@@ -134,7 +134,8 @@ export default function Tree({ expediente, dni, tipoDoc, numDoc }: TreeProps) {
               <li key={index} className="flex items-start space-x-4">
                 <div className="border-l-4 pl-4" style={{ borderColor: index === 0 ? "red" : "blue" }}>
                   <div className="font-semibold">
-                    {index === 0 ? "Dependencia de Inicio:" : "Derivado a:"}
+                    {/*index === 0 ? "Dependencia de Inicio:" : "Derivado a:"*/}
+                    {index === (datosExpediente.length - 1) ? "Dependencia de Inicio:" : "Derivado a:"}
                   </div>
                   <div>{index === 0 ? item.co_dep_emi_ref || "MESA DE PARTES" : item.ti_emi_des || "CIUDADANO"}</div>
                   <div className="text-sm font-normal">

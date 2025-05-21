@@ -71,7 +71,7 @@ LEFT JOIN
     ON rem.co_tip_doc_adm = doc_tipo_rem.cdoc_tipdoc
 LEFT JOIN 
     "IDOSGD_GRA".idosgd.tdtr_estados e 
-    ON e.co_est = d.es_doc_rec AND e.de_tab = 'TDTV_DESTINOS';`
+    ON e.co_est = d.es_doc_rec AND e.de_tab = 'TDTV_DESTINOS' order by d.fe_rec_doc desc;`
 
   try {
     const result = await query(sql, [nuDocEmi, coUseCre, coTipDocAdm]);
@@ -105,7 +105,6 @@ export async function unionDoc(nuDocEmi, coUseCre, coTipDocAdm) {
     }
 
     const resumen = await obtenerResumenPorExpediente(nuDocEmi, coUseCre, coTipDocAdm);
-    
     // Si la respuesta es un mensaje de no encontrar registros, devolver ese mensaje
     if (resumen.message) {
       return resumen;
@@ -185,7 +184,7 @@ export async function unionDoc(nuDocEmi, coUseCre, coTipDocAdm) {
       LEFT JOIN 
           "IDOSGD_GRA".idosgd.si_mae_tipo_doc doc_tipo ON rem.co_tip_doc_adm = doc_tipo.cdoc_tipdoc
       WHERE 
-          r.nu_expediente = $4;
+          r.nu_expediente = $4 ;
     `;
 
     const result = await query(sql, [
