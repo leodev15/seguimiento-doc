@@ -45,7 +45,7 @@ export default function SeguimientoContainer() {
   };
 
   return (
-    <div className="flex flex-col gap-8 px-4 pt-6 pb-12 max-w-6xl mx-auto">
+    <div className="flex flex-col gap-8 px-4 pt-6 pb-12 max-w-6xl mx-autos">
       <Search
         onSearch={handleSearchFromFront}
         onBackSearch={handleSearchFromBack}

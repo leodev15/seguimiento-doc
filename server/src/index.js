@@ -8,6 +8,8 @@ import { fileURLToPath } from "url";
 import remitoRoutes from "./routes/remitido.route.js";
 import tiposDocumentosRoutes from "./routes/tipos_documentos.routes.js";
 import seguimientoRoutes from "./routes/seguimiento_numDoc.routes.js";
+import dependencias from "./routes/dependencias.route.js";
+import personalByOficina from "./routes/personales_oficina.route.js";
 
 // Middleware y seguridad
 import { ddosProtection } from "./middleware/SecuriyDDoS.js";
@@ -38,6 +40,9 @@ app.get("/api/db-test", async (req, res) => {
 app.use("/api", remitoRoutes);  
 app.use("/api", tiposDocumentosRoutes);  
 app.use("/api", seguimientoRoutes);  
+
+app.use("/api", dependencias);  
+app.use("/api", personalByOficina);  
 
 const distPath = path.join(__dirname, "../../client/dist");
 console.log("Ruta distPath:", distPath); 

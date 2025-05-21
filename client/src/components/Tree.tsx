@@ -121,7 +121,7 @@ export default function Tree({ expediente, dni, tipoDoc, numDoc }: TreeProps) {
         </button>
       </ReactModal>
 
-      <div className="bg-white dark:bg-neutral-800 p-6 rounded-lg shadow-md">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
         {cargando ? (
           <p className="text-center text-black dark:text-white">Cargando datos...</p>
         ) : error ? (
@@ -132,7 +132,7 @@ export default function Tree({ expediente, dni, tipoDoc, numDoc }: TreeProps) {
           <ul className="space-y-6 pl-6 text-left text-black dark:text-white max-h-96 overflow-y-auto pr-2 custom-scroll">
             {datosExpediente.map((item, index) => (
               <li key={index} className="flex items-start space-x-4">
-                <div className="border-l-4 pl-4" style={{ borderColor: index === 0 ? "red" : "blue" }}>
+                <div className="border-l-4 pl-4" style={{ borderColor: index === (datosExpediente.length - 1) ? "red" : "blue" }}>
                   <div className="font-semibold">
                     {/*index === 0 ? "Dependencia de Inicio:" : "Derivado a:"*/}
                     {index === (datosExpediente.length - 1) ? "Dependencia de Inicio:" : "Derivado a:"}
@@ -140,6 +140,9 @@ export default function Tree({ expediente, dni, tipoDoc, numDoc }: TreeProps) {
                   <div>{index === 0 ? item.co_dep_emi_ref || "MESA DE PARTES" : item.ti_emi_des || "CIUDADANO"}</div>
                   <div className="text-sm font-normal">
                     Responsable: {item.co_emp_des || "Sin responsable"}
+                  </div>
+                  <div className="text-sm font-normal">
+                    Documento: {"MEMORANDO N° 000000"}
                   </div>
                   {item.nu_expediente && (
                     <div className="text-sm font-normal">
