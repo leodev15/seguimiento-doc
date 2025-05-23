@@ -163,7 +163,7 @@ export default function Search({
   return (
     <div className="w-full flex flex-col items-center justify-start gap-6 px-4 sm:px-6 md:px-8 pt-10 sm:pt-12 md:pt-16">
 
-      <section className="py-10 dark:bg-gray-800 rounded dark:border-x-gray-800 lg:pt-16 bg-white">
+      <section className="py-10 dark:bg-gray-800 rounded dark:border-x-gray-800 lg:pt-16 bg-white  shadow-md">
 
         <div className="container">
 
