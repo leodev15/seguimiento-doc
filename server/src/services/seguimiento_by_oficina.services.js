@@ -18,7 +18,30 @@ WHERE
         ORDER BY rem.fe_emi DESC
         LIMIT 1
     );`
-
+  {/**SELECT 
+    trr.nu_expediente
+FROM 
+    idosgd.tdtx_remitos_resumen trr
+WHERE 
+    trr.nu_emi = (
+        SELECT tas.nu_emi
+        FROM idosgd.tdtr_arbol_seg tas
+        WHERE tas.nu_emi_ref = (
+            SELECT rem.nu_emi
+            FROM idosgd.tdtv_remitos rem
+            WHERE 
+            rem.co_dep_emi = '00056'
+  			AND rem.co_emp_emi = '01113'
+    		AND rem.co_tip_doc_adm = '003'
+    		AND rem.nu_doc_emi = '000112'
+                AND rem.es_doc_emi != '9'
+            ORDER BY rem.fe_emi DESC
+            LIMIT 1
+        )
+        AND tas.ti_emi = 'R'
+        ORDER BY tas.nu_emi DESC
+        LIMIT 1
+    ); */}
   try {
     const result = await query(sql, [coDep, coPer, coTipDocAdm, numDoc]);
     // Si no hay resultados en la consulta, devolver un mensaje amigable
@@ -208,7 +231,7 @@ ORDER BY
       expediente: nuExpediente,
       documentos: result,
     };
-    
+
   } catch (error) {
     console.error("Error en el método unionDoc:", error.message, error.stack);
     throw new Error("Error en la base de datos");
