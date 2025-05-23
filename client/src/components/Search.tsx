@@ -34,7 +34,7 @@ export default function Search({
   onFrontChange,
   onBackChange,
 }: SearchProps) {
-  const [rotated, setRotated] = useState(false);
+  //const [rotated, setRotated] = useState(false);
   const [tiposDocumento, setTiposDocumento] = useState<TipoDocumento[]>([]);
   const [cargando, setCargando] = useState<boolean>(false);
   const [tipoSeleccionado, setTipoSeleccionado] = useState<string>("");
@@ -157,8 +157,8 @@ export default function Search({
   }
 
 
-  const handleRotateRight = () => setRotated(true);
-  const handleRotateLeft = () => setRotated(false);
+  //const handleRotateRight = () => setRotated(true);
+  //const handleRotateLeft = () => setRotated(false);
 
   return (
     <div className="w-full flex flex-col items-center justify-start gap-6 px-4 sm:px-6 md:px-8 pt-10 sm:pt-12 md:pt-16">
