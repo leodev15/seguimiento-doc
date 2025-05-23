@@ -4,13 +4,19 @@ import BASE_URL from "./config";
 export const fetchResumenOficinaSinExpediente = async (busqueda) => {
 
   const {codDependencia,codPersonal,codTipodoc,numDocumento} = busqueda;
+  console.log(busqueda)
   try {
     if (!codDependencia || !codPersonal || !codTipodoc || !numDocumento) {
       throw new Error('Faltan parámetros requeridos: dependencia, personal, tipo de documento o número de documento.');
     }
 
     const response = await axios.get(`${BASE_URL}/seguimiento/oficina/${codDependencia}/${codPersonal}/${codTipodoc}/${numDocumento}`);
+
+    console.log(response)
+
     const data = response.data;
+
+    console.log(data)
 
     if (!data.documentos || data.documentos.length === 0) {
       throw new Error('Documento no encontrado.');

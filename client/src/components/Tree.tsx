@@ -3,9 +3,9 @@ import ReactModal from "react-modal";
 import { fetchResumenPorExpediente } from "../../api/remitos";
 import { fetchResumenSinExpediente } from "../../api/Seguimiento_SinExp";
 import { Busqueda } from "../models/busqueda.model";
-import { fetchResumenOficinaSinExpediente } from "../../api/Seguimiento_by_oficina";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { SiGoogledocs } from "react-icons/si";
+import { fetchResumenOficinaSinExpediente } from "../../api/seguimiento_by_oficina";
 
 
 interface TreeProps {
@@ -14,16 +14,6 @@ interface TreeProps {
   tipoDoc: string;
   numDoc: string;
   busquedaOficina: Busqueda;
-}
-
-interface DatoResumenExpediente {
-  co_dep_emi_ref?: string;
-  ti_emi_des?: string;
-  co_emp_emi?: string;
-  co_emp_des?: string;
-  fecha?: string;
-  estado_doc?: string;
-  nu_expediente?: string;
 }
 
 interface DatosResumenExpediente {
@@ -42,23 +32,30 @@ interface DatosResumenExpediente {
   tipo_documento: string
 }
 
-interface DatoResumenSinExpediente {
-  co_dep_emi_ref?: string;
-  ti_emi_des?: string;
-  co_emp_emi?: string;
-  co_emp_des?: string;
-  hora_recepcion?: string;
-  estado_documento?: string;
-  nu_expediente?: string;
+interface DatosResumenSinExpediente {
+  nu_emi: string,
+  co_dep_emi: string,
+  oficina_remitente: string,
+  empleado_remitente: string,
+  fecha_emision: string,
+  estado_emisor: string,
+  co_dep_des: string,
+  oficina_destino: string,
+  empleado_destinatario: string,
+  fecha_recepcion: string | null,
+  estado_destino: string,
+  nu_doc_emi: string,
+  tipo_documento: string
 }
 
 export default function Tree({ expediente, dni, tipoDoc, numDoc, busquedaOficina }: TreeProps) {
   const [datosExpediente, setDatosExpediente] = useState<DatosResumenExpediente[]>([]);
-  const [datosSinExpediente, setDatosSinExpediente] = useState<DatoResumenSinExpediente[]>([]);
+  const [datosSinExpediente, setDatosSinExpediente] = useState<DatosResumenSinExpediente[]>([]);
   const [cargando, setCargando] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [numeroExpedienteModal, setNumeroExpedienteModal] = useState<string | null>(null);
   const [mostrarModal, setMostrarModal] = useState<boolean>(false);
+
 
   useEffect(() => {
     const obtenerDatos = async () => {
@@ -66,6 +63,7 @@ export default function Tree({ expediente, dni, tipoDoc, numDoc, busquedaOficina
       setError(null);
 
       try {
+
         if (expediente) {
           const response = await fetchResumenPorExpediente(expediente);
           setDatosExpediente(response);
@@ -92,6 +90,8 @@ export default function Tree({ expediente, dni, tipoDoc, numDoc, busquedaOficina
           setDatosSinExpediente([]);
           setError('Por favor, proporcione un expediente o los parámetros de DNI, tipo de documento y número de documento.');
         }
+
+
       } catch (error: unknown) {
         let errorMessage = 'Ocurrió un error al obtener los datos.';
         if (error instanceof Error) {
@@ -112,7 +112,7 @@ export default function Tree({ expediente, dni, tipoDoc, numDoc, busquedaOficina
     };
 
     obtenerDatos();
-  }, [expediente, dni, tipoDoc, numDoc]);
+  }, [expediente, dni, tipoDoc, numDoc, busquedaOficina]);
 
   const formatearFechaHora = (fechaISO?: string) => {
     if (!fechaISO) return "Fecha no disponible";
@@ -126,8 +126,6 @@ export default function Tree({ expediente, dni, tipoDoc, numDoc, busquedaOficina
       hour12: true,
     });
   };
-
-  console.log(datosExpediente.length)
 
   return (
     <div className="w-full">
@@ -165,9 +163,6 @@ export default function Tree({ expediente, dni, tipoDoc, numDoc, busquedaOficina
           <p className="text-center text-gray-500 dark:text-gray-300">❌ Registro no encontrado.</p>
         ) : expediente && datosExpediente.length > 0 ? (
           <ul className="space-y-6 pl-6 text-left text-black dark:text-white max-h-96 overflow-y-auto pr-2 custom-scroll">
-
-
-
             {datosExpediente.map((item, index) => (
               <li key={index} className="flex items-start space-x-4">
                 <div className="border border-gray-200 px-3 py-4 rounded-2xl shadow-lg" style={{ borderColor: index === (datosExpediente.length - 1) ? "red" : "gray" }}>
@@ -245,32 +240,64 @@ export default function Tree({ expediente, dni, tipoDoc, numDoc, busquedaOficina
 
           </ul>
         ) : datosSinExpediente.length > 0 ? (
-          <ul className="space-y-6 pl-6 text-left text-black dark:text-white max-h-96 overflow-y-auto pr-2 custom-scroll">
-            {datosSinExpediente.map((item, index) => (
-              <li key={index} className="flex items-start space-x-4">
-                <div className="border-l-4 pl-4" style={{ borderColor: index === 0 ? "red" : "blue" }}>
-                  <div className="font-semibold">
-                    {index === 0 ? "Dependencia de Inicio:" : "Derivado a:"}
-                  </div>
-                  <div>{index === 0 ? item.co_dep_emi_ref || "MESA DE PARTES" : item.ti_emi_des || "CIUDADANO"}</div>
-                  <div className="text-sm font-normal">
-                    Responsable: {item.co_emp_des || "Sin responsable"}
-                  </div>
-                  {item.nu_expediente && (
-                    <div className="text-sm font-normal">
-                      Número de Expediente: {item.nu_expediente}
+          <>
+            <div className={`${numeroExpedienteModal? "bg-green-400":"bg-gray-400"}  rounded-md py-3 mb-4`}>
+              <p className="font-semibold text-lg">{numeroExpedienteModal? (`N°: ${numeroExpedienteModal}`): "El documento aun no tiene un expediente."}</p>
+            </div>
+            <ul className="space-y-6 pl-6 text-left text-black dark:text-white max-h-96 overflow-y-auto pr-2 custom-scroll">
+              {datosSinExpediente.map((item, index) => (
+                <li key={index} className="flex items-start">
+                  <div className="border border-gray-200 px-3 py-4 rounded-2xl shadow-lg" style={{ borderColor: index === (datosExpediente.length - 1) ? "red" : "gray" }}>
+
+                    <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-8 items-start">
+                      {/* DESTINATARIO */}
+                      <div className="order-1 md:order-3">
+                        <p className="text-lg font-semibold">DESTINATARIO</p>
+                        <div className="border border-gray-200 px-3 py-4 rounded-2xl">
+                          <p><span className="font-semibold">{item.oficina_destino}</span></p>
+                          <p>Receptor: <span className="font-semibold">{item.empleado_destinatario}</span></p>
+                          <p>Fecha Recepción: <span className="font-semibold">{item.fecha_recepcion ? formatearFechaHora(item.fecha_recepcion) : "FECHA NO DISPONIBLE"}</span></p>
+                          <p>Estado: <span className="font-semibold">{item.estado_destino}</span></p>
+                        </div>
+                      </div>
+
+                      {/* ÍCONOS Y TEXTO */}
+
+                      <div className="order-2 flex flex-col items-center justify-center h-full space-y-2">
+                        <div className="flex md:flex-col">
+                          {/* Icono de documento */}
+                          <SiGoogledocs size={48} />
+
+                          {/* Flecha arriba en mobile, horizontal en md */}
+                          <FaLongArrowAltRight
+                            size={38}
+                            className="-rotate-90 md:rotate-0"
+                          />
+                        </div>
+
+                        {/* Texto del documento */}
+                        <span className="font-semibold text-center">
+                          {item.tipo_documento} N° {item.co_dep_emi}
+                        </span>
+                      </div>
+
+                      {/* REMITENTE */}
+                      <div className="order-3 md:order-1">
+                        <p className="text-lg font-semibold">REMITENTE</p>
+                        <div className="border border-gray-200 px-3 py-4 rounded-2xl">
+                          <p><span className="font-semibold">{item.oficina_remitente}</span></p>
+                          <p>Emisor: <span className="font-semibold">{item.empleado_remitente}</span></p>
+                          <p>Fecha Emisión: <span className="font-semibold">{formatearFechaHora(item.fecha_emision)}</span></p>
+                          <p>Estado: <span className="font-semibold">{item.estado_emisor}</span></p>
+                        </div>
+                      </div>
                     </div>
-                  )}
-                  <div className="text-sm font-normal">
-                    Estado: {item.estado_documento || "Sin estado"}
+
                   </div>
-                  <div className="text-sm font-normal">
-                    Fecha: {formatearFechaHora(item.hora_recepcion)}
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+          </>
         ) : (
           <p className="text-center text-gray-500 dark:text-gray-300">❌ Registro no encontrado.</p>
         )}

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import { fetchTiposDocumento } from "../../api/nom_doc";
 import { fetchDependencias } from "../../api/dependencias";
 import { Dependencia } from "../models/dependencias";
@@ -13,6 +12,7 @@ import { Busqueda } from "../models/busqueda.model";
 
 interface SearchProps {
   onSearch: (query: string) => void;
+  onSearchOficina: (busqueda: Busqueda) => void;
   onBackSearch: (dni: string, tipoDoc: string, numDoc: string) => void;
   frontQuery: string; // Número de expediente (cara frontal)
   backQuery: string; // DNI (cara trasera)
@@ -27,6 +27,7 @@ interface TipoDocumento {
 
 export default function Search({
   onSearch,
+  onSearchOficina,
   onBackSearch,
   frontQuery,
   backQuery,
@@ -48,8 +49,6 @@ export default function Search({
     codTipodoc: "",
     numDocumento: "",
   })
-  const [dependenciaSeleccionada, setDependenciaSeleccionada] = useState<string>("");
-  const [personalSeleccionado, setPersonalSeleccionado] = useState<string>("");
 
 
   {/**Agregando el tab LD */ }
@@ -108,14 +107,6 @@ export default function Search({
     setTipoSeleccionado(event.target.value);
   };
 
-  const handleDependenciaSeleccionado = (event: React.ChangeEvent<HTMLSelectElement>) => {
-
-    const { value } = event.target;
-    setDependenciaSeleccionada(value);
-    console.log(value)
-    findPersonalByOficina(value);
-  };
-
   const handleNumeroDocumentoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNumeroDocumento(event.target.value);
   };
@@ -148,7 +139,6 @@ export default function Search({
   };
   const handleSelectChangeDocumento = (value: string | number) => {
     setBusquedaOficina({ ...busquedaOficina, codTipodoc: value.toString() })
-
   };
 
   const handleNumDocumento = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,14 +147,15 @@ export default function Search({
   }
 
   const handleSearchOficina = () => {
-    console.log(busquedaOficina)
     setBusquedaOficina({
       codDependencia: "",
       codPersonal: "",
       codTipodoc: "",
       numDocumento: "",
     })
+    onSearchOficina(busquedaOficina)
   }
+
 
   const handleRotateRight = () => setRotated(true);
   const handleRotateLeft = () => setRotated(false);
@@ -180,42 +171,42 @@ export default function Search({
 
             <div className="w-full px-4">
               <div className="w-full">
-                <div className="flex flex-col flex-wrap rounded-lg border border-[#E4E4E4] px-4 py-3 dark:border-gray-800 sm:flex-row">
-                  <a
+                <div className="flex flex-col flex-wrap rounded-lg border border-[#E4E4E4] px-4 py-3 dark:border-gray-800 sm:flex-row justify-center">
+                  <p
                     onClick={() => handleTabOpen("home")}
-                    className={`cursor-pointer rounded-md px-4 py-3 text-sm font-medium md:text-base lg:px-6 ${open === "home"
-                      ? "bg-primary text-red-500"
-                      : "text-body-color hover:bg-primary hover:text-red-600 dark:text-dark-6 dark:hover:text-white"
+                    className={`cursor-pointer rounded-md px-4 py-3 text-lg font-medium md:text-lg lg:px-6 ${open === "home"
+                      ? " text-red-500"
+                      : " hover:text-red-600 dark:text-gray-200 dark:hover:text-white"
                       }`}
                   >
                     SEGUIMIENTO POR EXPEDIENTE
-                  </a>
+                  </p>
 
-                  <a
+                  <p
                     onClick={() => handleTabOpen("team")}
-                    className={`cursor-pointer rounded-md px-4 py-3 text-sm font-medium md:text-base lg:px-6 ${open === "team"
-                      ? "bg-primary text-red-500"
-                      : "text-gray-800 hover:bg-primary hover:text-red-600 dark:text-dark-6 dark:hover:text-white"
+                    className={`cursor-pointer rounded-md px-4 py-3 text-lg font-medium md:text-lg lg:px-6 ${open === "team"
+                      ? " text-red-500"
+                      : "text-gray-800 hover:text-red-600 dark:text-gray-200 dark:hover:text-white"
                       }`}
                   >
                     SEGUIMIENTO POR OFICINA
-                  </a>
+                  </p>
 
-                  <a
+                  <p
                     onClick={() => handleTabOpen("about")}
-                    className={`cursor-pointer rounded-md px-4 py-3 text-sm font-medium md:text-base lg:px-6 ${open === "about"
-                      ? "bg-primary text-red-500"
-                      : "text-gray-800 hover:bg-primary hover:text-red-600 dark:text-dark-6 dark:hover:text-white"
+                    className={`cursor-pointer rounded-md px-4 py-3 text-lg font-medium md:text-lg lg:px-6 ${open === "about"
+                      ? " text-red-500"
+                      : "text-gray-800 hover:text-red-600 dark:text-gray-200 dark:hover:text-white"
                       }`}
                   >
                     SEGUIMIENTO POR DNI
-                  </a>
+                  </p>
 
                 </div>
                 <TabContent
                   details={
                     <>
-                      <h1 className="text-2xl font-semibold my-4 mb-8 dark:text-white">
+                      <h1 className="text-2xl md:text-3xl font-semibold my-4 mb-8 dark:text-white">
                         Número de expediente
                       </h1>
                       <div className="w-full flex flex-col md:flex-row items-center gap-4">
@@ -249,7 +240,7 @@ export default function Search({
                 <TabContent
                   details={
                     <>
-                      <h1 className="text-lg sm:text-2xl font-semibold my-4 mb-8 dark:text-white">Datos del remitente</h1>
+                      <h1 className="text-2xl md:text-3xl font-semibold my-4 mb-8 dark:text-white">Datos del remitente</h1>
 
                       <div className="space-y-4">
 
@@ -284,7 +275,7 @@ export default function Search({
                             </select>*/}
                           </div>
 
-                          <div className="flex items-center justify-between">
+                          <div className="sm:flex items-center justify-between">
                             <label className="font-semibold text-xl mr-2">Tipo de Documento:</label>
 
                             {/*<select
@@ -307,17 +298,15 @@ export default function Search({
 
                           </div>
 
-
-
-                          <div className="flex items-center justify-between">
-                            <label className="font-semibold text-xl mr-2">Número de Documento:</label>
+                          <div className="sm:flex items-center justify-between">
+                            <label className="font-semibold text-xl sm:mr2">Número de Documento:</label>
 
                             <input
                               type="text"
                               value={busquedaOficina.numDocumento}
                               onChange={handleNumDocumento}
                               placeholder="N° de documento"
-                              className="w-[300px] md:w-[440px] lg:w-[540px] py-3 px-4 text-lg bg-white dark:bg-gray-900 text-black dark:text-white rounded-xl shadow-md border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+                              className="w-full sm:w-[300px] md:w-[440px] lg:w-[540px] py-3 px-4 text-lg bg-white dark:bg-gray-900 text-black dark:text-white rounded-xl shadow-md border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
                             />
                           </div>
                         </div>
@@ -341,27 +330,30 @@ export default function Search({
                 <TabContent
                   details={
                     <>
-                      <h1 className="text-2xl font-semibold my-4 mb-8 dark:text-white">Datos del remitente</h1>
+                      <h1 className="text-2xl md:text-3xl font-semibold my-4 mb-8 dark:text-white">Datos del remitente</h1>
 
                       <div className="space-y-4">
                         <div className="grid gap-6">
-                          <div className="flex items-center justify-between">
-                            <label className="font-semibold text-xl mr-2">DNI:</label>
+
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-2 sm:gap-0">
+                            <label className="font-semibold text-xl text-center sm:text-left">
+                              DNI:
+                            </label>
                             <input
                               type="text"
                               value={backQuery}
                               onChange={onBackChange}
                               placeholder="DNI"
-                              className="w-[300px] md:w-[440px] lg:w-[540px] py-3 px-4 text-lg bg-white text-black rounded-xl shadow-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white dark:placeholder-gray-400 dark:bg-gray-900 dark:border-gray-700 dark:text-white/90"
+                              className="w-full sm:w-[300px] md:w-[440px] lg:w-[540px] py-3 px-4 text-lg bg-white text-black rounded-xl shadow-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white dark:placeholder-gray-400 dark:bg-gray-900 dark:border-gray-700 dark:text-white/90"
                             />
                           </div>
 
-                          <div className="flex items-center justify-between">
-                            <label className="font-semibold text-xl mr-2">Tipo de documento:</label>
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-2 sm:gap-0">
+                            <label className="font-semibold text-xl text-center sm:text-left">Tipo de documento:</label>
                             <select
                               value={tipoSeleccionado}
                               onChange={handleTipoSeleccionado}
-                              className="w-[300px] md:w-[440px] lg:w-[540px] py-3 px-4 text-lg bg-white text-black rounded-xl shadow-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white dark:placeholder-gray-400 dark:bg-gray-900 dark:border-gray-700 dark:text-white/90"
+                              className="w-full sm:w-[300px] md:w-[440px] lg:w-[540px] py-3 px-4 text-lg bg-white text-black rounded-xl shadow-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white dark:placeholder-gray-400 dark:bg-gray-900 dark:border-gray-700 dark:text-white/90"
                             >
                               <option value="" disabled>Seleccionar opción</option>
                               {cargando ? (
@@ -376,14 +368,14 @@ export default function Search({
                             </select>
                           </div>
 
-                          <div className="flex items-center justify-between">
-                            <label className="font-semibold text-xl mr-2">Número de documento:</label>
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-2 sm:gap-0">
+                            <label className="font-semibold text-xl text-center sm:text-left">Número de documento:</label>
                             <input
                               type="text"
                               value={numeroDocumento}
                               onChange={handleNumeroDocumentoChange}
                               placeholder="N° de documento"
-                              className="w-[300px] md:w-[440px] lg:w-[540px] py-3 px-4 text-lg bg-white  text-black rounded-xl shadow-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white dark:placeholder-gray-400 dark:bg-gray-900 dark:border-gray-700 dark:text-white/90"
+                              className="w-full sm:w-[300px] md:w-[440px] lg:w-[540px] py-3 px-4 text-lg bg-white text-black rounded-xl shadow-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white dark:placeholder-gray-400 dark:bg-gray-900 dark:border-gray-700 dark:text-white/90"
                             />
                           </div>
                         </div>

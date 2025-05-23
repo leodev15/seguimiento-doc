@@ -64,7 +64,7 @@ export const SearchSelect: React.FC<SearchableSelectProps> = ({
                 }}
                 placeholder={placeholder}
                 onFocus={() => setIsOpen(true)}
-                className="w-[300px] md:w-[440px] lg:w-[540px] shadow-md border border-gray-300 rounded-lg px-4 py-3 text-lg focus:ring-2 focus:ring-red-500 focus:outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-white/90"
+                className="w-full sm:w-[300px] md:w-[440px] lg:w-[540px] shadow-md border border-gray-300 rounded-lg px-4 py-3 text-lg focus:ring-2 focus:ring-red-500 focus:outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-white/90"
             />
             {isOpen && filteredOptions.length > 0 && (
                 <ul className="absolute z-10 mt- w-full max-h-80 overflow-auto rounded-lg border border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-700 shadow-lg">

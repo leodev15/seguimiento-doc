@@ -1,5 +1,48 @@
 import { query } from "../db/db.js";
 
+export async function obtenerExpedientePorOficina(coDep, coPer, coTipDocAdm, numDoc) {
+  const sql = `SELECT 
+    trr.nu_expediente
+FROM 
+    idosgd.tdtx_remitos_resumen trr
+WHERE 
+    trr.nu_emi = (
+        SELECT rem.nu_emi
+        FROM idosgd.tdtv_remitos rem
+        WHERE 
+            rem.co_dep_emi = $1
+  			AND rem.co_emp_emi = $2
+    		AND rem.co_tip_doc_adm = $3
+    		AND rem.nu_doc_emi = $4
+            AND rem.es_doc_emi != '9'
+        ORDER BY rem.fe_emi DESC
+        LIMIT 1
+    );`
+
+  try {
+    const result = await query(sql, [coDep, coPer, coTipDocAdm, numDoc]);
+    // Si no hay resultados en la consulta, devolver un mensaje amigable
+    if (result.length === 0) {
+      return { message: "Archivo no encuentra ningún registro." };
+    }
+
+    let expediente = result[0]?.nu_expediente || result[1]?.nu_expediente;
+
+    if (!expediente) {
+      expediente = "documento aun no tiene expediente";
+    }
+
+    return {
+      expediente,
+      documentos: result,
+    };
+  } catch (error) {
+    console.error("Error en el servicio de expediente:", error.message, error.stack);
+    throw new Error("Error en la base de datos");
+  }
+}
+
+
 export async function obtenerResumenPorOficina(coDep, coPer, coTipDocAdm, numDoc) {
   const sql = `SELECT 
     rem.nu_emi,
@@ -68,54 +111,6 @@ ORDER BY
   }
 }
 
-export async function obtenerExpedientePorOficina(coDep, coPer, coTipDocAdm, numDoc) {
-  const sql = `SELECT 
-    trr.nu_expediente
-FROM 
-    idosgd.tdtx_remitos_resumen trr
-WHERE 
-    trr.nu_emi = (
-        SELECT tas.nu_emi
-        FROM idosgd.tdtr_arbol_seg tas
-        WHERE tas.nu_emi_ref = (
-            SELECT rem.nu_emi
-            FROM idosgd.tdtv_remitos rem
-            WHERE 
-            rem.co_dep_emi = $1
-  			AND rem.co_emp_emi = $2
-    		AND rem.co_tip_doc_adm = $3
-    		AND rem.nu_doc_emi = $4
-                AND rem.es_doc_emi != '9'
-            ORDER BY rem.fe_emi DESC
-            LIMIT 1
-        )
-        AND tas.ti_emi = 'R'
-        ORDER BY tas.nu_emi DESC
-        LIMIT 1
-    );`
-
-  try {
-    const result = await query(sql, [coDep, coPer, coTipDocAdm, numDoc]);
-    // Si no hay resultados en la consulta, devolver un mensaje amigable
-    if (result.length === 0) {
-      return { message: "Archivo no encuentra ningún registro." };
-    }
-
-    let expediente = result[0]?.nu_expediente || result[1]?.nu_expediente;
-
-    if (!expediente) {
-      expediente = "documento aun no tiene expediente";
-    }
-
-    return {
-      expediente,
-      documentos: result,
-    };
-  } catch (error) {
-    console.error("Error en el servicio de expediente:", error.message, error.stack);
-    throw new Error("Error en la base de datos");
-  }
-}
 
 export async function unionDocs(codigoDependencia, codigoPersonal, tipoDocumento, numeroDocumento) {
   try {
@@ -208,8 +203,6 @@ ORDER BY
     const result = await query(sql, [
       nuExpediente
     ]);
-
-    console.log(result)
 
     return {
       expediente: nuExpediente,
