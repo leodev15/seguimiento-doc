@@ -2,11 +2,20 @@ import { useState } from "react";
 import Search from "./Search";
 import Tree from "./Tree";
 import { validateDni, validatePartialDni, validateNumDoc } from "../utils/validation.js"; 
+import { Busqueda } from "../models/busqueda.model.js";
 export default function SeguimientoContainer() {
   const [expediente, setExpediente] = useState("");
   const [dni, setDni] = useState("");
   const [tipoDoc, setTipoDoc] = useState("");
   const [numDoc, setNumDoc] = useState("");
+
+  /**Agregado */
+  const [busquedaOficina, setBusquedaOficina] = useState<Busqueda>({
+      codDependencia: "",
+      codPersonal: "",
+      codTipodoc: "",
+      numDocumento: "",
+    })
 
   const handleSearchFromFront = (query: string) => {
     setExpediente(query);
@@ -14,6 +23,10 @@ export default function SeguimientoContainer() {
     setTipoDoc("");
     setNumDoc("");
   };
+
+  const handleSearchByOficina = (codDependencia:string, codPersonal: string, codTipodoc: string, numDocumento: string) =>{
+
+  }
 
   const handleSearchFromBack = (dni: string, tipoDoc: string, numDoc: string) => {
     if (!validateDni(dni)) {
@@ -44,6 +57,10 @@ export default function SeguimientoContainer() {
     }
   };
 
+  const handleSearchOficina = ()=>{
+
+  }
+
   return (
     <div className="flex flex-col gap-8 px-4 pt-6 pb-12 max-w-6xl mx-autos">
       <Search
@@ -59,6 +76,7 @@ export default function SeguimientoContainer() {
         tipoDoc={tipoDoc}
         numDoc={numDoc}
         expediente={expediente}
+        busquedaOficina={busquedaOficina}
       />
     </div>
   );

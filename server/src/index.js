@@ -10,6 +10,7 @@ import tiposDocumentosRoutes from "./routes/tipos_documentos.routes.js";
 import seguimientoRoutes from "./routes/seguimiento_numDoc.routes.js";
 import dependencias from "./routes/dependencias.route.js";
 import personalByOficina from "./routes/personales_oficina.route.js";
+import seguimientoByOficina from "./routes/seguimiento_ofic.routes.js";
 
 // Middleware y seguridad
 import { ddosProtection } from "./middleware/SecuriyDDoS.js";
@@ -43,6 +44,7 @@ app.use("/api", seguimientoRoutes);
 
 app.use("/api", dependencias);  
 app.use("/api", personalByOficina);  
+app.use("/api", seguimientoByOficina);  
 
 const distPath = path.join(__dirname, "../../client/dist");
 console.log("Ruta distPath:", distPath); 

@@ -9,6 +9,7 @@ import { fetchPersonalByOficina } from "../../api/personal_by_oficina";
 import { SearchSelect } from "./form/SearchSelect";
 import { Option, transformarDependencias, transformarDocumentos, transformarPersonales } from "../utils/formatValueSelect.utility";
 import { Documento } from "../models/documentos.model";
+import { Busqueda } from "../models/busqueda.model";
 
 interface SearchProps {
   onSearch: (query: string) => void;
@@ -41,6 +42,12 @@ export default function Search({
   const [documentos, setDocumento] = useState<Option[]>([]);
   const [dependencias, setDependencias] = useState<Option[]>([]);
   const [personales, setPersonales] = useState<Option[]>([]);
+  const [busquedaOficina, setBusquedaOficina] = useState<Busqueda>({
+    codDependencia: "",
+    codPersonal: "",
+    codTipodoc: "",
+    numDocumento: "",
+  })
   const [dependenciaSeleccionada, setDependenciaSeleccionada] = useState<string>("");
   const [personalSeleccionado, setPersonalSeleccionado] = useState<string>("");
 
@@ -109,8 +116,6 @@ export default function Search({
     findPersonalByOficina(value);
   };
 
-  console.log(personales)
-
   const handleNumeroDocumentoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNumeroDocumento(event.target.value);
   };
@@ -134,16 +139,32 @@ export default function Search({
 
 
   const handleSelectChange = (value: string | number) => {
-    console.log(value)
     findPersonalByOficina(value.toString());
+    setBusquedaOficina({ ...busquedaOficina, codDependencia: value.toString() })
   };
 
   const handleSelectChangePersonal = (value: string | number) => {
-    console.log(value)
+    setBusquedaOficina({ ...busquedaOficina, codPersonal: value.toString() })
   };
   const handleSelectChangeDocumento = (value: string | number) => {
-    console.log(value)
+    setBusquedaOficina({ ...busquedaOficina, codTipodoc: value.toString() })
+
   };
+
+  const handleNumDocumento = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setBusquedaOficina({ ...busquedaOficina, numDocumento: value })
+  }
+
+  const handleSearchOficina = () => {
+    console.log(busquedaOficina)
+    setBusquedaOficina({
+      codDependencia: "",
+      codPersonal: "",
+      codTipodoc: "",
+      numDocumento: "",
+    })
+  }
 
   const handleRotateRight = () => setRotated(true);
   const handleRotateLeft = () => setRotated(false);
@@ -293,8 +314,8 @@ export default function Search({
 
                             <input
                               type="text"
-                              value={numeroDocumento}
-                              onChange={handleNumeroDocumentoChange}
+                              value={busquedaOficina.numDocumento}
+                              onChange={handleNumDocumento}
                               placeholder="N° de documento"
                               className="w-[300px] md:w-[440px] lg:w-[540px] py-3 px-4 text-lg bg-white dark:bg-gray-900 text-black dark:text-white rounded-xl shadow-md border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-red-500"
                             />
@@ -303,7 +324,7 @@ export default function Search({
 
                         <div className="flex justify-center mt-6">
                           <button
-                            onClick={handleBackSearch}
+                            onClick={handleSearchOficina}
                             className="bg-red-500 dark:bg-red-600 text-white py-4 my-5 px-8 rounded-xl hover:bg-red-600 dark:hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition"
                           >
                             Buscar
@@ -316,7 +337,7 @@ export default function Search({
                   open={open}
                 />
 
-{/*Busqueda por dni */}
+                {/*Busqueda por dni */}
                 <TabContent
                   details={
                     <>

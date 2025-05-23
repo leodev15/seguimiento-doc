@@ -2,12 +2,18 @@ import { useEffect, useState } from "react";
 import ReactModal from "react-modal";
 import { fetchResumenPorExpediente } from "../../api/remitos";
 import { fetchResumenSinExpediente } from "../../api/Seguimiento_SinExp";
+import { Busqueda } from "../models/busqueda.model";
+import { fetchResumenOficinaSinExpediente } from "../../api/Seguimiento_by_oficina";
+import { FaLongArrowAltRight } from "react-icons/fa";
+import { SiGoogledocs } from "react-icons/si";
+
 
 interface TreeProps {
   expediente: string;
   dni: string;
   tipoDoc: string;
   numDoc: string;
+  busquedaOficina: Busqueda;
 }
 
 interface DatoResumenExpediente {
@@ -20,6 +26,22 @@ interface DatoResumenExpediente {
   nu_expediente?: string;
 }
 
+interface DatosResumenExpediente {
+  nu_emi: string,
+  co_dep_emi: string,
+  oficina_remitente: string,
+  empleado_remitente: string,
+  fecha_emision: string,
+  estado_emisor: string,
+  co_dep_des: string,
+  oficina_destino: string,
+  empleado_destinatario: string,
+  fecha_recepcion: string,
+  estado_destino: string,
+  nu_doc_emi: string,
+  tipo_documento: string
+}
+
 interface DatoResumenSinExpediente {
   co_dep_emi_ref?: string;
   ti_emi_des?: string;
@@ -30,8 +52,8 @@ interface DatoResumenSinExpediente {
   nu_expediente?: string;
 }
 
-export default function Tree({ expediente, dni, tipoDoc, numDoc }: TreeProps) {
-  const [datosExpediente, setDatosExpediente] = useState<DatoResumenExpediente[]>([]);
+export default function Tree({ expediente, dni, tipoDoc, numDoc, busquedaOficina }: TreeProps) {
+  const [datosExpediente, setDatosExpediente] = useState<DatosResumenExpediente[]>([]);
   const [datosSinExpediente, setDatosSinExpediente] = useState<DatoResumenSinExpediente[]>([]);
   const [cargando, setCargando] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,6 +76,17 @@ export default function Tree({ expediente, dni, tipoDoc, numDoc }: TreeProps) {
           setDatosExpediente([]);
           setNumeroExpedienteModal(response.numeroExpediente || null);
           setMostrarModal(true);
+
+        } else if (busquedaOficina.codDependencia && busquedaOficina.codPersonal && busquedaOficina.codTipodoc, busquedaOficina.numDocumento) {
+
+          const response = await fetchResumenOficinaSinExpediente(busquedaOficina);
+
+          setDatosSinExpediente(response.listaDocumentos);
+          setDatosExpediente([]);
+          setNumeroExpedienteModal(response.numeroExpediente || null);
+
+          setMostrarModal(true);
+
         } else {
           setDatosExpediente([]);
           setDatosSinExpediente([]);
@@ -94,6 +127,8 @@ export default function Tree({ expediente, dni, tipoDoc, numDoc }: TreeProps) {
     });
   };
 
+  console.log(datosExpediente.length)
+
   return (
     <div className="w-full">
       {/* Modal de número de expediente */}
@@ -130,14 +165,18 @@ export default function Tree({ expediente, dni, tipoDoc, numDoc }: TreeProps) {
           <p className="text-center text-gray-500 dark:text-gray-300">❌ Registro no encontrado.</p>
         ) : expediente && datosExpediente.length > 0 ? (
           <ul className="space-y-6 pl-6 text-left text-black dark:text-white max-h-96 overflow-y-auto pr-2 custom-scroll">
+
+
+
             {datosExpediente.map((item, index) => (
               <li key={index} className="flex items-start space-x-4">
-                <div className="border-l-4 pl-4" style={{ borderColor: index === (datosExpediente.length - 1) ? "red" : "blue" }}>
+                <div className="border border-gray-200 px-3 py-4 rounded-2xl shadow-lg" style={{ borderColor: index === (datosExpediente.length - 1) ? "red" : "gray" }}>
                   <div className="font-semibold">
                     {/*index === 0 ? "Dependencia de Inicio:" : "Derivado a:"*/}
-                    {index === (datosExpediente.length - 1) ? "Dependencia de Inicio:" : "Derivado a:"}
+
                   </div>
-                  <div>{index === 0 ? item.co_dep_emi_ref || "MESA DE PARTES" : item.ti_emi_des || "CIUDADANO"}</div>
+
+                  {/*<div>{index === 0 ? item.co_dep_emi_ref || "MESA DE PARTES" : item.ti_emi_des || "CIUDADANO"}</div>
                   <div className="text-sm font-normal">
                     Responsable: {item.co_emp_des || "Sin responsable"}
                   </div>
@@ -154,10 +193,56 @@ export default function Tree({ expediente, dni, tipoDoc, numDoc }: TreeProps) {
                   </div>
                   <div className="text-sm font-normal">
                     Fecha: {formatearFechaHora(item.fecha)}
-                  </div> 
+                  </div>*/}
+
+                  <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-8 items-start">
+                    {/* DESTINATARIO */}
+                    <div className="order-1 md:order-3">
+                      <p className="text-lg font-semibold">DESTINATARIO</p>
+                      <div className="border border-gray-200 px-3 py-4 rounded-2xl">
+                        <p><span className="font-semibold">{item.oficina_destino}</span></p>
+                        <p>Receptor: <span className="font-semibold">{item.empleado_destinatario}</span></p>
+                        <p>Fecha Recepción: <span className="font-semibold">{formatearFechaHora(item.fecha_recepcion)}</span></p>
+                        <p>Estado: <span className="font-semibold">{item.estado_destino}</span></p>
+                      </div>
+                    </div>
+
+                    {/* ÍCONOS Y TEXTO */}
+
+                    <div className="order-2 flex flex-col items-center justify-center h-full space-y-2">
+                      <div className="flex md:flex-col">
+                        {/* Icono de documento */}
+                        <SiGoogledocs size={48} />
+
+                        {/* Flecha arriba en mobile, horizontal en md */}
+                        <FaLongArrowAltRight
+                          size={38}
+                          className="-rotate-90 md:rotate-0"
+                        />
+                      </div>
+
+                      {/* Texto del documento */}
+                      <span className="font-semibold text-center">
+                        {item.tipo_documento} N° {item.co_dep_emi}
+                      </span>
+                    </div>
+
+                    {/* REMITENTE */}
+                    <div className="order-3 md:order-1">
+                      <p className="text-lg font-semibold">REMITENTE</p>
+                      <div className="border border-gray-200 px-3 py-4 rounded-2xl">
+                        <p><span className="font-semibold">{item.oficina_remitente}</span></p>
+                        <p>Emisor: <span className="font-semibold">{item.empleado_remitente}</span></p>
+                        <p>Fecha Emisión: <span className="font-semibold">{formatearFechaHora(item.fecha_emision)}</span></p>
+                        <p>Estado: <span className="font-semibold">{item.estado_emisor}</span></p>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </li>
             ))}
+
           </ul>
         ) : datosSinExpediente.length > 0 ? (
           <ul className="space-y-6 pl-6 text-left text-black dark:text-white max-h-96 overflow-y-auto pr-2 custom-scroll">
